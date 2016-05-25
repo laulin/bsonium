@@ -1,4 +1,5 @@
 import bsonium;
+import std.stdio;
 
 // --- cast & constructor ---
 
@@ -22,6 +23,22 @@ unittest
     byte[] source = [1,2,3];
     auto x = BSONValue(source);
     assert(x.bin() == source);
+}
+
+unittest
+{
+    //make array
+    string[] source = ["1","2","3"];
+    auto x = BSONValue(source);
+    assert(x.array() == [BSONValue("1"), BSONValue("2"), BSONValue("3")]);
+}
+
+unittest
+{
+    //make DOCUMENT
+    string[string] source = ["1" : "2"];
+    auto x = BSONValue(source);
+    assert(x.document() == ["1" : BSONValue("2")]);
 }
 
 // --- type() function ---
@@ -62,35 +79,4 @@ unittest
     string[string] source = ["1" : "2"];
     auto x = BSONValue(source);
     assert(x.type() == BSON_TYPE.DOCUMENT);
-}
-
-// --- opIndex() ---
-
-unittest
-{
-    //opIndex on array
-    string[] source = ["1","2","3"];
-    auto x = BSONValue(source);
-    assert(x[0] == BSONValue("1"));
-}
-
-
-unittest
-{
-    //opIndex on document
-    string[string] source = ["1":"2"];
-    auto x = BSONValue(source);
-    assert(x["1"] == BSONValue("2"));
-}
-
-// --- opIndexAssign ---
-
-
-unittest
-{
-    //opIndex on document
-    string[string] source = ["1":"2"];
-    auto x = BSONValue(source);
-    x["4"] = BSONValue(2);
-    assert(x["4"] == BSONValue(2));
 }

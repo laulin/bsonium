@@ -1,5 +1,6 @@
 import std.stdio;
 import std.exception;
+import std.format;
 
 enum BSON_TYPE {DOCUMENT=0x00, INT64=0x12, BINARY_GENERIC=0x05, STRING=0x02, ARRAY=0x04};
 
@@ -8,8 +9,8 @@ struct BSONValue
     BSON_TYPE _type;
 
     // containers
-    BSONValue[string] document;
-    BSONValue[] array;
+    BSONValue[string] _document;
+    BSONValue[] _array;
 
     // terminal
     long int_64_value;
@@ -58,8 +59,15 @@ struct BSONValue
 
         foreach(e; values)
         {
-            array ~= BSONValue(e);
+            _array ~= BSONValue(e);
         }
+    }
+
+    ref BSONValue[] array()
+    {
+        enforce(_type == BSON_TYPE.ARRAY);
+
+        return _array;
     }
 
     this(T)(T[string] values)
@@ -68,8 +76,15 @@ struct BSONValue
 
         foreach(k, v; values)
         {
-            document[k] = BSONValue(v);
+            _document[k] = BSONValue(v);
         }
+    }
+
+    ref BSONValue[string] document()
+    {
+        enforce(_type == BSON_TYPE.DOCUMENT);
+
+        return _document;
     }
 
     BSON_TYPE type()
@@ -77,27 +92,6 @@ struct BSONValue
         return _type;
     }
 
-    BSONValue opIndex(size_t i)
-    {
-        enforce(_type == BSON_TYPE.ARRAY);
-
-        return array[i];
-    }
-
-    BSONValue opIndex(string i)
-    {
-        enforce(_type == BSON_TYPE.DOCUMENT);
-
-        return document[i];
-    }
-
-    BSONValue opIndexAssign(BSONValue value, string i)
-    {
-        enforce(_type == BSON_TYPE.DOCUMENT);
-
-        document[i] = value;
-        return this;
-    }
 }
 
 void main(string[] argv)
