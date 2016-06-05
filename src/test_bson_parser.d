@@ -1,3 +1,5 @@
+ import std.stdio;
+
 import bson_parser;
 import bson_value;
 
@@ -45,6 +47,18 @@ unittest
 
     BSONValue doc = parser.parse_document(data);
     assert(doc.array() == [BSONValue("c", "a")]);
+}
+
+unittest
+{
+    BSONParser parser;
+    parser.set_string_as_binary(true);
+
+    byte[] data = [9,0,0,0,  cast(byte)BSON_TYPE.STRING, 'c', 0,   1,0,0,0, 'a',0,   0];
+
+    BSONValue doc = parser.parse_document(data);
+
+    assert(doc.array() == [BSONValue("c",  cast(byte[])['a', 0])]);
 }
 
 unittest

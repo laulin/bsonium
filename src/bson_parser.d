@@ -10,6 +10,14 @@ struct BSONParser
     ulong[] end_of_document;
     BSONValue[] documents;
 
+    // this flag is used to read string type as binary data
+    bool str_as_bin = false;
+
+    void set_string_as_binary(bool flag)
+    {
+        str_as_bin = flag;
+    }
+
     BSONValue parse_document(byte[] data)
     {
         BSONValue document = BSONValue("");
@@ -42,6 +50,17 @@ struct BSONParser
     {
         long value = *cast(long*) data.ptr;
         data = data[long.sizeof .. $];
+        parent.array() ~= BSONValue(key, value);
+    }
+
+    void parse_string_as_bin(ref byte[] data, string key, ref BSONValue parent)
+    {
+        int size = *cast(int*) data.ptr;
+        data = data[int.sizeof .. $];
+
+        byte[] value = data[0 .. size+1];
+        data = data[size+1 .. $];
+
         parent.array() ~= BSONValue(key, value);
     }
 
@@ -95,7 +114,15 @@ struct BSONParser
             switch(id)
             {
                 case BSON_TYPE.STRING: // string
-                    parse_string(data, key, parent);
+                    if(str_as_bin == false)
+                    {
+                        parse_string(data, key, parent);
+                    }
+                    else
+                    {
+                        parse_string_as_bin(data, key, parent);
+                    }
+
                     break;
 
                 case BSON_TYPE.ARRAY: // array
