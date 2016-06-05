@@ -1,6 +1,3 @@
-import std.stdio;
-import std.json;
-
 import bson_value;
 
 class BSONFormat
