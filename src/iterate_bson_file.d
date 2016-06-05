@@ -58,7 +58,7 @@ class IterateBSONFile
         BSONValue[] output;
         output.length = result.length;
         BSONParser parser = BSONParser();
-        
+
         foreach(i, document; result)
         {
             output[i] = parser.parse_document(document);
@@ -110,7 +110,7 @@ unittest
 
 unittest
 {
-    // need python3 test/data/make_int_doc.py 100000 test/data/int.bson
+    // need python3 test/data/make_int_doc.py 100 test/data/int_100.bson
     IterateBSONFile iterator = new IterateBSONFile();
     iterator.open("test/data/int_100.bson");
 
